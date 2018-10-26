@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ant.be.mapper.CourseAllotMapper">
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.ant.be.dto.CourseAllotDto">
+        <id column="id" property="id" />
+		<result column="user_id" property="userId" />
+		<result column="course_id" property="courseId" />
+		<result column="user_type" property="userType" />
+		<result column="is_charge" property="isCharge" />
+		<result column="delete_flg" property="deleteFlg" />
+		<result column="course_name" property="courseName" />
+		<result column="user_name" property="userName" />
+	</resultMap>
+	
+	<select id="searchCourseAllot" resultMap="BaseResultMap">
+	
+		select c1.*,c2.name as course_name,u1.nike_name as user_name from course_allot c1
+		LEFT JOIN course c2 ON c1.course_id = c2.id	
+		LEFT JOIN users u1 on u1.id=c1.user_id
+		where c1.delete_flg = false
+		<if test="userId != null ">and c1.user_id = #{userId}</if>
+		<if test="courseId != null ">and c1.course_id = #{courseId}</if>
+		<if test="userType != null &amp;&amp; userType != ''">and c1.user_type = #{userType}</if>
+	</select>
+	
+</mapper>

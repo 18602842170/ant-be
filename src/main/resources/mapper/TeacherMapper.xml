@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ant.be.mapper.TeacherMapper" >
+	<!-- 全查询resultMap -->
+    <resultMap id="BaseResultsMap" type="com.ant.be.dto.TeacherDto" >
+        <id column="id" property="id" />
+		<result column="teacher_name" property="teacherName" />
+		<result column="teacher_cd" property="teacherCd" />
+		<result column="teacher_sex" property="teacherSex" />
+		<result column="teacher_level" property="teacherLevel" />
+		<result column="user_id" property="userId" />
+		<result column="teacher_profile" property="teacherProfile" />
+    </resultMap>
+
+    <!-- 查询teacherList -->
+    <select id="searchTeachers" resultMap="BaseResultsMap">
+		select 
+			teacher.*, _users.nike_name AS teacherNameInUser
+		FROM 
+			teacher
+		LEFT JOIN users _users ON  _users."id" = teacher.user_id
+		WHERE 
+			teacher.delete_flg = false
+		<if test="teacherCd != null &amp;&amp; teacherCd != ''">
+			AND teacher.teacher_cd = #{teacherCd}
+		</if>
+		<if test="teacherLevel != null &amp;&amp; teacherLevel != ''">
+			AND teacher.teacher_level = #{teacherLevel}
+		</if>
+		<if test="userId != null &amp;&amp; userId != ''">
+			AND teacher.user_id = #{userId}
+		</if>
+		
+		AND _users.nike_name like #{teacherName}
+		ORDER BY teacher.id
+	</select>
+
+	
+</mapper>

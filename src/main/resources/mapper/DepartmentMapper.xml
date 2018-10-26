@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ant.be.mapper.DepartmentMapper">
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.ant.be.entity.Department">
+		<id column="id" property="id" />
+		<result column="dept_name" property="deptName" />
+		<result column="p_id" property="pId" />
+	</resultMap>
+	<select id="searchDepartment" resultMap="BaseResultMap">
+		select * from department  where delete_flg = false
+		<if test="pId != null ">and p_id = #{pId}</if>
+		<if test="deptName != null &amp;&amp; deptName != ''">and dept_name = #{name,jdbcType=VARCHAR}</if>
+	</select>
+</mapper>

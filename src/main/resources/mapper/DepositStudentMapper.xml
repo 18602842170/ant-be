@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ant.be.mapper.DepositStudentMapper" >
+	<!-- 全查询resultMap -->
+    <resultMap id="BaseResultsMap" type="com.ant.be.dto.DepositStudentDto" >
+        <id column="id" property="id" />
+		<result column="student_name" property="studentNameInUser" />
+		<result column="classroom_name" property="classRoomName" />
+		<result column="deposit_time_str" property="depositTimeStr" />
+		<result column="student_user_id" property="studentUserId" />
+		<result column="class_room_id" property="classRoomId" />
+		<result column="deposit_start_date" property="depositStartDate" />
+		<result column="deposit_end_date" property="depositEndDate" />
+		<result column="need_food_str" property="needFoodStr" />
+		<result column="food_flag" property="foodFlag" />
+    </resultMap>
+
+    <!-- 查询teacherList -->
+    <select id="searchDepositStudentList" resultMap="BaseResultsMap">
+		select 
+			deposit_student.*, 
+			_users1.id AS student_user_id,
+			_users1.nike_name AS student_name,
+			classroom.id AS class_room_id,
+			classroom.classroom_name,
+			to_char(deposit_student.deposit_start_date,'yyyy-MM-dd') || ' - ' || to_char(deposit_student.deposit_end_date,'yyyy-MM-dd') AS deposit_time_str,
+			CASE WHEN 
+				deposit_student.food_flag = '0'
+			THEN 
+				'是'
+			ELSE
+				'否'
+			END AS need_food_str
+			
+		FROM
+		 
+			deposit_student
+			
+		LEFT JOIN users _users1 ON  _users1."id" = deposit_student.student_user_id
+		
+		LEFT JOIN classroom ON classroom."id" = deposit_student.class_room_id
+		
+		WHERE 
+			deposit_student.delete_flg = false
+		<if test="studentName != null &amp;&amp; studentName != ''">
+			AND _users1.nike_name LIKE #{studentName}
+		</if>
+		<if test="classRoomName != null &amp;&amp; classRoomName != ''">
+			AND classroom.classroom_name LIKE #{classRoomName}
+		</if>
+		<if test="studentUserId != null">
+			AND deposit_student.student_user_id = ${studentUserId}
+		</if>
+		<if test="depositId != null">
+			AND deposit_student.id = #{depositId}
+		</if>
+		<if test="foodFlag != null">
+			AND deposit_student.food_flag LIKE #{foodFlag}
+		</if>
+		
+		ORDER BY deposit_student.id
+	</select>
+
+
+    <!-- 查询teacherList -->
+    <select id="searchStudentByTecherId" resultMap="BaseResultsMap">
+    	SELECT 
+			s1.*,
+			_users1.nike_name AS student_name,
+			classroom.classroom_name
+		FROM 
+			deposit_student s1
+		inner join 
+			(SELECT 
+				s2.class_room_id,
+				s2.deposit_start_date,
+				s2.deposit_end_date
+				FROM 
+				deposit_teacher s2
+				where 
+				s2.teacher_user_id = #{techerId} and
+				s2.delete_flg = false
+			) s3 
+		on s1.class_room_id = s3.class_room_id
+		and (
+				(s3.deposit_start_date &lt;= s1.deposit_end_date and s3.deposit_start_date &gt;= s1.deposit_start_date)
+				or (s3.deposit_end_date &lt;= s1.deposit_end_date and s3.deposit_end_date &gt;= s1.deposit_end_date)
+				or (s3.deposit_start_date &lt;= s1.deposit_start_date and s3.deposit_end_date &gt;= s1.deposit_end_date)
+			)	
+		LEFT JOIN users _users1 ON  _users1.id = s1.student_user_id
+		LEFT JOIN classroom ON classroom.id = s1.class_room_id
+		ORDER BY 
+			s1.student_user_id,s1.deposit_start_date ASC 
+	</select>
+
+	
+</mapper>

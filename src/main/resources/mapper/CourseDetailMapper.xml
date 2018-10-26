@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ant.be.mapper.CourseDetailMapper">
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.ant.be.dto.CourseDetailDto">
+        <id column="id" property="id" />
+		<result column="name" property="name" />
+		<result column="course_id" property="courseId" />
+		<result column="course_day" property="courseDay" />
+		<result column="start_time" property="startTime" />
+		<result column="end_time" property="endTime" />
+		<result column="is_roll_call" property="isRollCall" />
+		<result column="delete_flg" property="deleteFlg" />
+		<result column="course_day_str" property="courseDayStr" />
+		<result column="user_id" property="userId" />
+		
+	</resultMap>
+	
+	<select id="searchCourseDetail" resultMap="BaseResultMap">
+		select 
+			c3.name,
+			to_char(c1.course_day,'yyyy-MM-dd') as course_day_str,
+			c1.*
+		from course_detail c1 
+		left join course c3 on c1.course_id = c3.id
+		where c1.delete_flg = false
+		<if test="id != null ">and c1.id = ${id}</if>
+		<if test="courseId != null ">and c1.course_id = ${courseId}</if>
+		<if test="isRollCall != null ">and c1.is_roll_call = ${isRollCall}</if>
+		<if test="isteacher != null &amp;&amp; userId != null ">
+			and c1.course_id in (select c2.course_id from course_detail c2 where c2.user_id = ${userId})
+		</if>
+		
+		<if test="isstudent != null &amp;&amp; userId != null ">
+			and c1.course_id in (select c2.course_id from course_allot c2 where c2.user_id = ${userId})
+		</if>
+		<if test="userId != null ">and c1.course_id in (select c2.course_id from course_allot c2 where c2.user_id = ${userId})</if>
+		<if test="techerId != null ">and c1.user_id = ${techerId}</if>
+		<if test="searchDay != null &amp;&amp; searchDay != 0">and EXTRACT(day FROM c1.course_day) = ${searchDay}</if>
+		<if test="searchMonth != null &amp;&amp; searchMonth != 0">and EXTRACT(month FROM c1.course_day) = ${searchMonth}</if>
+		<if test="searchYear != null &amp;&amp; searchYear != 0">and EXTRACT(year FROM c1.course_day) = ${searchYear}</if>
+		
+		<if test="courseDayStr != null">and to_char(c1.course_day,'yyyy-MM-dd') =#{courseDayStr} </if>
+		
+	</select>
+	
+</mapper>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ant.be.mapper.CourseReserveMapper">
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.ant.be.dto.CourseReserveDto">
+        <id column="id" property="id" />
+        <result column="course_id" property="courseId" />
+        <result column="reserve_code" property="reserveCode" />
+        <result column="phone_number" property="phoneNumber" />
+        <result column="delete_flg" property="deleteFlg" />
+        <result column="creat_date" property="creatDate" />
+        <result column="update_date" property="updateDate" />
+        <result column="course_name" property="courseName" />
+	</resultMap>
+	
+	<select id="searchCourseReserve" resultMap="BaseResultMap">
+	
+		select course_reserve.*,course.name as course_name from course_reserve 
+		
+		LEFT JOIN course ON course."id" = course_reserve.course_id
+		
+		where course_reserve.delete_flg = false
+		<if test="id != null ">and course_reserve.id = #{id}</if>
+		<if test="courseId != null ">and course_reserve.course_id = #{courseId}</if>
+		<if test="reserveCode != null &amp;&amp; reserveCode != ''">and course_reserve.reserve_code like #{reserveCode}</if>
+		<if test="phoneNumber != null &amp;&amp; phoneNumber != ''">and course_reserve.phone_number like #{phoneNumber}</if>
+	</select>
+	
+</mapper>     

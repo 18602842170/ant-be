@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ant.be.mapper.DepositTeacherMapper" >
+	<!-- 全查询resultMap -->
+    <resultMap id="BaseResultsMap" type="com.ant.be.dto.DepositTeacherDto" >
+        <id column="id" property="id" />
+		<result column="teacher_name" property="teacherNameInUser" />
+		<result column="classroom_name" property="classRoomName" />
+		<result column="deposit_time_str" property="depositTimeStr" />
+		<result column="teacher_user_id" property="teacherUserId" />
+		<result column="class_room_id" property="classRoomId" />
+		<result column="deposit_start_date" property="depositStartDate" />
+		<result column="deposit_end_date" property="depositEndDate" />
+    </resultMap>
+
+    <!-- 查询teacherList -->
+    <select id="searchDepositTeacherList" resultMap="BaseResultsMap">
+		select 
+			deposit_teacher.*, 
+			_users1.id AS teacher_user_id,
+			_users1.nike_name AS teacher_name,
+			classroom.id AS class_room_id,
+			classroom.classroom_name,
+			to_char(deposit_teacher.deposit_start_date,'yyyy-MM-dd') || ' - ' || to_char(deposit_teacher.deposit_end_date,'yyyy-MM-dd') AS deposit_time_str
+			
+		FROM
+		 
+			deposit_teacher
+			
+		LEFT JOIN users _users1 ON  _users1."id" = deposit_teacher.teacher_user_id
+		
+		LEFT JOIN classroom ON classroom."id" = deposit_teacher.class_room_id
+		
+		WHERE 
+			deposit_teacher.delete_flg = false
+		<if test="teacherName != null &amp;&amp; teacherName != ''">
+			AND _users1.nike_name LIKE #{teacherName}
+		</if>
+		<if test="classRoomName != null &amp;&amp; classRoomName != ''">
+			AND classroom.classroom_name LIKE #{classRoomName}
+		</if>
+		<if test="depositId != null">
+			AND deposit_teacher.id = #{depositId}
+		</if>
+		
+		ORDER BY deposit_teacher.id
+	</select>
+
+	
+</mapper>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ant.be.mapper.GradeMapper" >
+    <resultMap id="BaseResultsMap" type="com.ant.be.dto.GradeDto" >
+        <id column="id" property="id" />
+        <result column="distiguish_id" property="distiguishId" />
+        <result column="distiguishType" property="distiguishType" />
+		<result column="start_date" property="startDate" />
+		<result column="end_date" property="endDate" />
+		<result column="grade_year" property="gradeYear" />
+    </resultMap>
+    
+    <select id="searchGrade" resultMap="BaseResultsMap">
+		select g1.*,
+		d1.tp_name as distiguishType
+		from grade g1
+		LEFT JOIN distinguish d1 on d1.id =g1.distiguish_id
+		WHERE g1.delete_flg = false
+		<if test="searchDay != null &amp;&amp; searchDay != 0">and EXTRACT(day FROM g1.grade_year) = ${searchDay}</if>
+		<if test="searchMonth != null &amp;&amp; searchDay != 0">and EXTRACT(month FROM g1.grade_year) = ${searchMonth}</if>
+		<if test="searchYear != null &amp;&amp; searchYear != 0">and EXTRACT(year FROM g1.grade_year) = ${searchYear}</if>
+       	<if test="distiguishId != null &amp;&amp; distiguishId != 0">and g1.distiguish_id = ${distiguishId}</if>
+		order by g1.id
+	</select>
+	
+    <select id="searchGradeById" resultMap="BaseResultsMap">
+		select g1.*,
+		d1.tp_name as distiguishType
+		from grade g1
+		LEFT JOIN distinguish d1 on d1.id =g1.distiguish_id
+		WHERE g1.delete_flg = false
+		<if test="id != null &amp;&amp; id != ''">and g1.id = #{id}</if>
+		order by g1.id
+	</select>
+</mapper>

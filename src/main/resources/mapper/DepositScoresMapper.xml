@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ant.be.mapper.DepositScoresMapper" >
+	<!-- 全查询resultMap -->
+    <resultMap id="BaseResultsMap" type="com.ant.be.dto.DepositScoresDto" >
+        <id column="id" property="id" />
+		<result column="deposit_student_id" property="depositStudentId" />
+		<result column="scores_date_string" property="scoresDateString" />
+		<result column="scoresa" property="scoresA" />
+		<result column="scoresb" property="scoresB" />
+		<result column="scoresc" property="scoresC" />
+    </resultMap>
+
+    <!-- 查询teacherList -->
+    <select id="searchDepositScoresList" resultMap="BaseResultsMap">
+		select
+			*
+		FROM
+			deposit_scores
+		WHERE 
+			deposit_scores.delete_flg = false
+		<if test="depositStudentId != null">
+			AND deposit_student_id = ${depositStudentId}
+		</if>
+		<if test="scoresDateString != null &amp;&amp; scoresDateString != ''">
+			AND scores_date_string = #{scoresDateString}
+		</if>
+		ORDER BY id
+	</select>
+
+	
+</mapper>

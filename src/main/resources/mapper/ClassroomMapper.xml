@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ant.be.mapper.ClassroomMapper" >
+    <resultMap id="BaseResultsMap" type="com.ant.be.dto.ClassroomDto" >
+        <id column="id" property="id" />
+        <result column="classroom_name" property="classroomName" />
+        <result column="classroom_address" property="classroomAddress" />
+		<result column="classroom_people" property="classroomPeople" />
+    </resultMap>
+    
+    <select id="searchClassrooms" resultMap="BaseResultsMap">
+		select c1.*
+		FROM classroom c1
+		where c1.delete_flg=false
+		<if test="classroomName != null &amp;&amp; classroomName != ''">and c1.classroom_name like #{classroomName}</if>
+       	<if test="classroomAddress != null &amp;&amp; classroomAddress != ''">and c1.classroom_address like #{classroomAddress}</if>
+       	<if test="classroomPeople != null &amp;&amp; classroomPeople != 0">and c1.classroom_people = #{classroomPeople}</if>
+		order by c1.id
+	</select>
+	
+</mapper>

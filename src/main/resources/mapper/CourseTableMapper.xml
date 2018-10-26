@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ant.be.mapper.CourseTableMapper">
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.ant.be.dto.CourseTableDto">
+        <result column="grade" property="grade" />
+        <result column="course_subject" property="courseSubject" />
+        <result column="course_name" property="courseName" />
+        <result column="mon" property="mon" />
+        <result column="tues" property="tues" />
+        <result column="wed" property="wed" />
+        <result column="thur" property="thur" />
+        <result column="fri" property="fri" />
+        <result column="sat" property="sat" />
+        <result column="sun" property="sun" />
+        
+	</resultMap>
+	
+	<select id="searchCourseTable" resultMap="BaseResultMap">
+		select * from sv1002
+		<if test="gradeId != null "> where grade_id = #{gradeId}</if>
+	</select>
+	
+</mapper>     

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ant.be.mapper.RoleMapper">
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.ant.be.dto.RoleDto">
+		<id column="id" property="id" />
+		<result column="name" property="name" />
+		<result column="permission_list" property="permissionList" />
+	</resultMap>
+	<select id="searchRole" resultMap="BaseResultMap">
+<!-- 		insert into role(name, num,permission_list,version) values(#{name}, #{num},(#{permissionList})::json,null) -->
+		select *,r1.name as reName from role r1 where r1.delete_flg = false
+		<if test="id != null ">and r1.id = #{id}</if>
+		<if test="name != null &amp;&amp; name != ''">and r1.name like #{name}</if>
+	</select>
+</mapper>

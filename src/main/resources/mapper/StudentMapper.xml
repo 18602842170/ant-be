@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ant.be.mapper.StudentMapper" >
+    <resultMap id="BaseResultsMap" type="com.ant.be.dto.StudentDto" >
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="student_number" property="studentNumber" />
+		<result column="student_name" property="studentName" />
+		<result column="student_phone" property="studentPhone" />
+		<result column="student_sex" property="studentSex" />
+		<result column="student_sexname" property="studentSexName" />
+		<result column="student_school" property="studentSchool" />
+		<result column="student_age" property="studentAge" />
+		<result column="student_grade" property="studentGrade" />
+		<result column="grade" property="studentGradeName" />
+		<result column="parents" property="parents" />
+		<result column="course_id" property="courseId" />
+    </resultMap>
+    
+    <select id="searchStudents" resultMap="BaseResultsMap">
+		select s1.id,s1.user_id,s1.student_school,s1.student_age,s1.student_grade,s1.student_sex,s1.parents,d1.tp_name as grade,
+		case when student_sex ='0' then '男'
+		when student_sex ='1' then '女' 
+		else '' end
+		as student_sexname,
+		u1.nike_name as student_name,
+		u1.phone_number as student_phone
+		from student s1 
+		LEFT JOIN users u1 ON u1.id = s1.user_id
+		LEFT JOIN distinguish d1 on d1.id||''=CAST(s1.student_grade as NUMERIC)||''
+		where s1.delete_flg=false
+		and u1.delete_flg=false
+		<if test="studentName != null &amp;&amp; studentName != ''">and u1.nike_name like #{studentName}</if>
+       	<if test="studentSchool != null &amp;&amp; studentSchool != ''">and s1.student_school like #{studentSchool}</if>
+       	
+      	<if test="userId != null &amp;&amp; userId != ''">and s1.user_id = #{userId}</if>
+       	
+       	
+		order by s1.id
+	</select>
+	
+    <select id="searchStudentById" resultMap="BaseResultsMap">
+		select s1.id,s1.user_id,s1.student_school,s1.student_age,s1.student_grade,s1.student_sex,s1.parents,
+		case when student_sex ='0' then '男'
+		when student_sex ='1' then '女' 
+		else '' end
+		as student_sexname,
+		u1.nike_name as student_name,
+		u1.phone_number as student_phone
+		from student s1 
+		LEFT JOIN users u1 ON u1.id = s1.user_id
+		where s1.delete_flg=false
+		and u1.delete_flg=false
+		<if test="id != null &amp;&amp; id != ''">and s1.id = #{id}</if>
+		order by s1.id
+	</select>
+</mapper>

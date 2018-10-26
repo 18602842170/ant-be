@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ant.be.mapper.CourseMapper">
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.ant.be.dto.CourseDto">
+        <id column="id" property="id" />
+		<result column="name" property="name" />
+		<result column="price" property="price" />
+		<result column="back_image_url" property="backImageUrl" />
+		<result column="fine" property="fine" />
+		<result column="delete_flg" property="deleteFlg" />
+		<result column="grade_id" property="gradeId" />
+		<result column="subject_id" property="subjectId" />
+		
+		
+		<result column="pay_number" property="payNumber" />
+		<result column="appointment_number" property="appointmentNumber" />
+		<result column="classes_number" property="classesNumber" />
+		<result column="grade_id" property="gradeId" />
+		<result column="subject_id" property="subjectId" />
+		<result column="teachers" property="teachers" />
+		<result column="user_id" property="userId" />
+		<result column="course_number" property="courseNumber" />
+		<result column="subject_name"    />
+		<result column="grade_name"   />
+		<result column="user_name"   />
+		<result column="classroom_name"   />
+		<result column="gradeclass_name"   />
+		<result column="deleteFlg" property="deleteFlg" />
+		<result column="gradeClassName" property="gradeClassName" />
+	</resultMap>
+	
+	
+	<select id="searchCourse" resultMap="BaseResultMap">
+	
+		select *,_distinguish.tp_name subjectName, _distinguish01.tp_name gradeName ,_distinguish02.tp_name gradeclassName,users.nike_name userName,classroom.classroom_name classroomName from course 
+		
+		<if test="searchCourseDetailCount != null &amp;&amp; searchCourseDetailCount != ''">
+			left join (select t1.course_id,t1.delete_flg,count(*) courseDetailCount  from course_detail t1 
+		   		where t1.delete_flg = false group by t1.course_id,t1.delete_flg) t2 on t2.course_id=course.id
+		</if>
+		<if test="searchCourseReserveCount != null &amp;&amp; searchCourseReserveCount != ''">
+			left join (select t3.course_id,t3.delete_flg,count(*) courseReserveCount from course_reserve t3 
+				where t3.delete_flg = false group by t3.course_id,t3.delete_flg) t4 on t4.course_id=course.id
+		</if>
+		
+		left join distinguish _distinguish ON course.subject_id = _distinguish. ID
+		LEFT JOIN distinguish _distinguish01 ON course.grade_id = _distinguish01. ID
+		left join users on course.user_id=users.id
+		left join classroom on course.classroom_id=classroom.id
+		left join (select grade.*,distinguish.tp_name  from grade left join distinguish on grade.distiguish_id=distinguish.id) _distinguish02
+		on course.grade_class_id= _distinguish02.id 
+		where course.delete_flg = false
+		
+		<if test="id != null ">and course.id = #{id}</if>
+		<if test="name != null &amp;&amp; name != ''">and course.name like #{name}</if>
+		<if test="fine != null &amp;&amp; fine != ''">and course.fine = #{fine}</if>
+		<if test="gradeId != null &amp;&amp; gradeId != ''">and course.grade_id = #{gradeId}</if>
+		<if test="subjectId != null &amp;&amp; subjectId != ''">and course.subject_id = #{subjectId}</if>
+		order by course.creat_date DESC
+	</select>
+	
+	<select id="searchPersonalCourse" resultMap="BaseResultMap">
+		select 
+		case when  t2.courseCount is null 
+		then 0 
+		else t2.courseCount 
+		end,
+		course.*,
+		t3.tp_name gradeClassName
+		from course
+		
+		left join (select 
+		t1.course_id,
+		count(*) courseCount  
+		from course_detail t1 
+		where t1.delete_flg = false and t1.is_roll_call = true
+		group by t1.course_id) t2 on t2.course_id=course.id
+		
+		left join (
+			select t4.*,t5.tp_name from grade t4 left join distinguish t5 on t5.id=t4.distiguish_id and t5.delete_flg=false where t4.delete_flg=false
+		) t3 on t3.id=course.grade_class_id
+		where course.id in (select c3.course_id from course_allot c3 
+		where c3.delete_flg=false <if test="userId != null &amp;&amp; userId != ''">and c3.user_id =${userId} </if>)
+	</select>
+</mapper>

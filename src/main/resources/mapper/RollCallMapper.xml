@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ant.be.mapper.RollCallMapper">
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.ant.be.dto.RollCallDto">
+        <id column="id" property="id" />
+		<result column="user_id" property="userId" />
+		<result column="course_detail_id" property="courseDetailId" />
+		<result column="is_to_class" property="isToClass" />
+		<result column="comment" property="comment" />
+		<result column="user_name" property="userName" />
+		<result column="start_time" property="startTime" />
+		<result column="end_time" property="endTime" />
+		<result column="course_day" property="courseDay" />
+	</resultMap>
+	
+	<select id="searchRollCall" resultMap="BaseResultMap">
+		SELECT r1.*,u1.nike_name as user_name,c1.start_time,c1.end_time,c1.course_day
+		from roll_call r1
+		LEFT JOIN users u1 ON u1.id=r1.user_id 
+		LEFT JOIN course_detail c1 on c1.id =r1.course_detail_id
+		WHERE r1.delete_flg=FALSE
+		<if test="courseId != null ">and r1.course_detail_id in (select c2.id from course_detail c2 where c2.course_id = #{courseId})</if>
+		<if test="userId != null ">and r1.user_id = #{userId}</if>
+		<if test="searchDay != null &amp;&amp; searchDay != 0">and EXTRACT(day FROM c1.course_day) = ${searchDay}</if>
+		<if test="searchMonth != null &amp;&amp; searchMonth != 0">and EXTRACT(month FROM c1.course_day) = ${searchMonth}</if>
+		<if test="searchYear != null &amp;&amp; searchYear != 0">and EXTRACT(year FROM c1.course_day) = ${searchYear}</if>
+		<if test="courseDetailId != null ">and r1.course_detail_id = #{courseDetailId}</if>
+		<if test="id != null ">and r1.id = #{id}</if>
+	</select>
+	
+</mapper>
