@@ -23,7 +23,7 @@ spring:
   # jdbc
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://114.116.28.17:5000/ant-be
+    url: jdbc:postgresql://127.0.0.1:5432/ant-be
     username: postgres
     password: AAA111+++
     platform: postgres
